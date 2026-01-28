@@ -8,6 +8,8 @@ n8n community node for **Vigil Guard Enterprise** - AI Detection & Response (AID
 
 Protect your AI workflows from prompt injection attacks, PII leakage, harmful content, and policy violations with multi-language support.
 
+> **Note:** Vigil Guard Enterprise is a **self-hosted solution**. There is no public cloud API. You must deploy VGE on your own infrastructure before using this node.
+
 ## Overview
 
 The **VGE AIDR** node acts as a security gateway for LLM workflows, providing real-time protection for both inputs and outputs. Deploy it as a guard before your AI agent to filter malicious prompts, and after your AI agent to prevent sensitive data leakage and harmful content.
@@ -113,7 +115,7 @@ services:
 | Field | Description | Example |
 |-------|-------------|---------|
 | API Key | Your VGE API key | `vg_live_abc123...` or `vg_test_xyz789...` |
-| Base URL | API endpoint URL | `https://api.vigilguard.ai` |
+| Base URL | Your VGE instance URL | `https://api.vigilguard.yourdomain.com` |
 
 ### Step 2: Add VGE AIDR Node
 
@@ -296,7 +298,7 @@ n8n-nodes-vge/
 |-------------|---------|
 | Node.js | >= 18.10 |
 | n8n | >= 1.0.0 |
-| Vigil Guard Enterprise | API access required |
+| Vigil Guard Enterprise | Self-hosted instance required |
 
 ## Support
 
