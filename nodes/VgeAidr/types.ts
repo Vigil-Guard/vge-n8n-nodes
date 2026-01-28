@@ -76,5 +76,5 @@ export interface NodeOptions {
   timeout?: number;
   failOpen?: boolean;
   includeFullResponse?: boolean;
-  metadata?: string;
+  metadata?: string | Record<string, unknown>;
 }

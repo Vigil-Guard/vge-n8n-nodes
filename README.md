@@ -123,6 +123,7 @@ services:
 |-------|-------------|---------|
 | API Key | Your VGE API key | `vg_live_abc123...` or `vg_test_xyz789...` |
 | Base URL | Your VGE instance URL | `https://api.vigilguard.yourdomain.com` |
+| Skip SSL Verification | Whether to skip SSL verification (self-signed only) | `false` |
 
 ### Step 2: Add VGE AIDR Node
 
@@ -143,6 +144,19 @@ Drag the **VGE AIDR** node into your workflow and configure the parameters:
 | Fail Open | true | On API error, continue with original text |
 | Include Full Response | false | Include all detection branch details |
 | Custom Metadata | `{}` | Additional metadata for logging/audit |
+
+## TLS and Certificates (Self-Hosted)
+
+For self-hosted VGE, use a valid TLS certificate and keep SSL verification enabled.
+
+**Recommended approach:**
+- Issue a certificate for your VGE hostname (FQDN) using a trusted CA or your own internal CA.
+- Ensure the certificate includes the correct SAN (hostname or IP).
+- Install your CA certificate in the system trust store on the host and inside containers that call VGE.
+- For Node.js, you can also set `NODE_EXTRA_CA_CERTS` to point to your CA file inside the container.
+
+**Emergency option only:**
+The **Skip SSL Verification** credential setting disables certificate checks. Use it only as a temporary workaround when you cannot install a proper certificate. It increases MITM risk and should not be used in production.
 
 ## Output Data
 
@@ -288,13 +302,14 @@ npm run lint
 
 ```
 n8n-nodes-vge/
-├── src/
-│   ├── nodes/
-│   │   └── VgeAidr/
-│   │       ├── VgeAidr.node.ts    # Main node implementation
-│   │       └── vge-aidr.svg       # Node icon
-│   └── credentials/
-│       └── VgeApi.credentials.ts  # API credentials
+├── nodes/
+│   └── VgeAidr/
+│       ├── VgeAidr.node.ts    # Main node implementation
+│       └── vge.svg            # Node icon
+├── credentials/
+│   ├── VgeApi.credentials.ts  # API credentials
+│   └── vge.svg                # Credential icon
+├── index.ts
 ├── package.json
 └── tsconfig.json
 ```

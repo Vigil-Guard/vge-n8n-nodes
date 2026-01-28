@@ -175,9 +175,11 @@ export class VgeAidr implements INodeType {
         const failOpen = options.failOpen !== false;
 
         if (failOpen) {
+          const text = this.getNodeParameter('text', itemIndex, '') as string;
           guardedItems.push({
             json: {
               ...items[itemIndex].json,
+              guardedText: text ?? '',
               vgError: sanitizeErrorMessage(error),
               vgFailOpen: true,
               vgDecision: 'ALLOWED',
@@ -252,15 +254,20 @@ async function processItem(
   }
 
   if (options.metadata) {
-    try {
-      requestBody.metadata = JSON.parse(options.metadata);
-    } catch {
-      // Ignore invalid JSON
+    if (typeof options.metadata === 'string') {
+      try {
+        requestBody.metadata = JSON.parse(options.metadata);
+      } catch {
+        // Ignore invalid JSON
+      }
+    } else {
+      requestBody.metadata = options.metadata;
     }
   }
 
   const credentials = await this.getCredentials('vgeApi');
   const baseUrl = validateBaseUrl(credentials.baseUrl as string);
+  const skipSslVerification = credentials.skipSslVerification === true;
 
   const response = (await this.helpers.httpRequest({
     method: 'POST',
@@ -272,7 +279,7 @@ async function processItem(
     body: requestBody,
     json: true,
     timeout: options.timeout ?? 5000,
-    skipSslCertificateValidation: true,
+    skipSslCertificateValidation: skipSslVerification,
   })) as VgeResponse;
 
   const guardedText = selectGuardedText(response, text);

@@ -27,9 +27,17 @@ export class VgeApi implements ICredentialType {
       displayName: 'Base URL',
       name: 'baseUrl',
       type: 'string',
-      default: 'https://api.vigilguard',
+      default: 'https://api.vigilguard.yourdomain.com',
       required: true,
       description: 'VGE API base URL (change for self-hosted deployments)',
+    },
+    {
+      displayName: 'Skip SSL Verification',
+      name: 'skipSslVerification',
+      type: 'boolean',
+      default: false,
+      description:
+        'Whether to skip SSL certificate verification (use only for self-signed certificates)',
     },
   ];
 
@@ -47,7 +55,7 @@ export class VgeApi implements ICredentialType {
       baseURL: '={{$credentials.baseUrl}}',
       url: '/health',
       method: 'GET',
-      skipSslCertificateValidation: true,
+      skipSslCertificateValidation: '={{$credentials.skipSslVerification}}',
     },
   };
 }

@@ -12,13 +12,7 @@
         -432
       ],
       "id": "1f6508ca-9446-42f0-aa70-4dacf65215c8",
-      "name": "VGE AIDR",
-      "credentials": {
-        "vgeApi": {
-          "id": "gUT2cLM3AQZWEVRA",
-          "name": "VGE account"
-        }
-      }
+      "name": "VGE AIDR"
     },
     {
       "parameters": {
@@ -51,7 +45,7 @@
       ],
       "id": "42675b3e-d506-45de-8084-4b6f519b909e",
       "name": "When chat message received",
-      "webhookId": "eaff650b-1dd4-419e-844e-a0cda0f24671"
+      "webhookId": "REPLACE_ME"
     },
     {
       "parameters": {
@@ -65,13 +59,7 @@
         -208
       ],
       "id": "452a4940-5a85-4dff-96ea-d5ce931d4ff4",
-      "name": "Groq Chat Model",
-      "credentials": {
-        "groqApi": {
-          "id": "BqlF8ewlgfN68pgL",
-          "name": "Groq account"
-        }
-      }
+      "name": "Groq Chat Model"
     },
     {
       "parameters": {},
@@ -88,7 +76,7 @@
       "parameters": {
         "streamDirection": "output",
         "text": "={{ $json.output }}",
-        "originalPrompt": "={{ $json.output }}",
+        "originalPrompt": "={{ $json.chatInput }}",
         "options": {}
       },
       "type": "CUSTOM.vgeAidr",
@@ -98,13 +86,7 @@
         -432
       ],
       "id": "3a15ad5c-ce8d-4973-83d7-90ffa2e8c4ff",
-      "name": "VGE AIDR1",
-      "credentials": {
-        "vgeApi": {
-          "id": "gUT2cLM3AQZWEVRA",
-          "name": "VGE account"
-        }
-      }
+      "name": "VGE AIDR1"
     },
     {
       "parameters": {
@@ -117,13 +99,7 @@
         -208
       ],
       "id": "9fa03530-6aec-4081-8295-fdd0750f8545",
-      "name": "SerpAPI",
-      "credentials": {
-        "serpApi": {
-          "id": "56GTN99FNIyjNFcx",
-          "name": "SerpAPI account"
-        }
-      }
+      "name": "SerpAPI"
     },
     {
       "parameters": {
