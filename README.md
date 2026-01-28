@@ -139,7 +139,7 @@ Drag the **VGE AIDR** node into your workflow and configure the parameters:
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| Timeout | 30000ms | Request timeout in milliseconds |
+| Timeout | 5000ms | Request timeout in milliseconds |
 | Fail Open | true | On API error, continue with original text |
 | Include Full Response | false | Include all detection branch details |
 | Custom Metadata | `{}` | Additional metadata for logging/audit |

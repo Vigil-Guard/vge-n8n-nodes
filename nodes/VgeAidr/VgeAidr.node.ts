@@ -133,7 +133,7 @@ export class VgeAidr implements INodeType {
             displayName: 'Timeout (ms)',
             name: 'timeout',
             type: 'number',
-            default: 30000,
+            default: 5000,
             description: 'Request timeout in milliseconds',
           },
           {
@@ -271,7 +271,7 @@ async function processItem(
     },
     body: requestBody,
     json: true,
-    timeout: options.timeout ?? 30000,
+    timeout: options.timeout ?? 5000,
     skipSslCertificateValidation: true,
   })) as VgeResponse;
 
