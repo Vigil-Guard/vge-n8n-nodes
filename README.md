@@ -1,36 +1,62 @@
 # n8n-nodes-vge
 
+![n8n version](https://img.shields.io/badge/n8n-%3E%3D1.0.0-blue)
+![Node.js](https://img.shields.io/badge/node-%3E%3D18.10-green)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
 n8n community node for **Vigil Guard Enterprise** - AI Detection & Response (AIDR) for LLM security.
+
+Protect your AI workflows from prompt injection attacks, PII leakage, malicious content, and policy violations.
 
 ## Overview
 
-This package provides the **VGE AIDR** node that acts as a security gateway for LLM workflows. It analyzes prompts and responses for:
-
-- Prompt injection attacks
-- PII (Personal Identifiable Information)
-- Malicious content
-- Policy violations
-
-The node uses a **single-output architecture** with decision metadata, making it easy to integrate into any workflow.
+The **VGE AIDR** node acts as a security gateway for LLM workflows, providing real-time protection for both inputs and outputs. Deploy it as a guard before your AI agent to filter malicious prompts, and after your AI agent to prevent sensitive data leakage.
 
 ```
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│ Chat Trigger │───►│  VGE AIDR    │───►│  AI Agent    │
-│              │    │              │    │  (OpenAI)    │
-└──────────────┘    └──────────────┘    └──────────────┘
-                           │
-                           ▼
-                    Output includes:
-                    • guardedText (processed text)
-                    • vgDecision (ALLOWED/SANITIZED/BLOCKED)
-                    • vgScore, vgThreatLevel, etc.
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│ Chat Trigger │───>│  VGE AIDR    │───>│  AI Agent    │───>│  VGE AIDR    │───>│   Response   │
+│              │    │ (Input Guard)│    │  (OpenAI)    │    │(Output Guard)│    │              │
+└──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
+                           │                                       │
+                           │         Detects & Protects:           │
+                           │    - Prompt injection attacks         │
+                           │    - PII (Personal Identifiable Info) │
+                           │    - Malicious content                │
+                           │    - Policy violations                │
+                           └───────────────────────────────────────┘
 ```
+
+## Features
+
+- **Dual Protection** - Guard both inputs (before LLM) and outputs (after LLM)
+- **Single-Output Architecture** - Simplified workflow integration with decision metadata
+- **Automatic Text Processing** - Returns `guardedText` based on detection decision
+- **Fail-Safe Design** - Configurable fail-open behavior prevents workflow disruption
+- **Passthrough Fields** - Preserve session context and custom fields across nodes
+- **Full Response Details** - Optional access to all detection branch results
 
 ## Installation
 
-### Development (Docker)
+### Community Nodes (Recommended)
 
-Mount the package as a custom node in n8n:
+1. Open your n8n instance
+2. Navigate to **Settings** > **Community Nodes**
+3. Search for `n8n-nodes-vge`
+4. Click **Install**
+5. Restart n8n if prompted
+
+### Manual Installation
+
+```bash
+cd ~/.n8n/custom
+npm install n8n-nodes-vge
+```
+
+Then restart n8n.
+
+### Docker Development
+
+Mount the package as a custom node for local development:
 
 ```yaml
 # docker-compose.yml
@@ -46,185 +72,208 @@ services:
       - /path/to/VGE-n8n:/home/node/custom-nodes/n8n-nodes-vge:ro
 ```
 
-### Community Nodes (Future)
-
-Once published:
-
-1. Open n8n
-2. Go to **Settings** → **Community Nodes**
-3. Search for `n8n-nodes-vge`
-4. Click **Install**
-
 ## Configuration
 
-### 1. Add VGE API Credentials
+### Step 1: Add VGE API Credentials
 
-1. Go to **Settings** → **Credentials**
+1. Go to **Settings** > **Credentials**
 2. Click **Add Credential**
 3. Search for **VGE API**
-4. Enter your API key and base URL
+4. Enter your credentials:
 
-| Field | Description |
-|-------|-------------|
-| API Key | Your VGE API key (`vg_live_...` or `vg_test_...`) |
-| Base URL | API endpoint (e.g., `https://api.vigilguard`) |
+| Field | Description | Example |
+|-------|-------------|---------|
+| API Key | Your VGE API key | `vg_live_abc123...` or `vg_test_xyz789...` |
+| Base URL | API endpoint URL | `https://api.vigilguard.ai` |
 
-### 2. Add VGE AIDR Node to Workflow
+### Step 2: Add VGE AIDR Node
 
-Drag the **VGE AIDR** node into your workflow and configure:
+Drag the **VGE AIDR** node into your workflow and configure the parameters:
 
-| Parameter | Description |
-|-----------|-------------|
-| Stream Direction | `Input (Before LLM)` or `Output (After LLM)` |
-| Text | The text to analyze (default: `{{ $json.chatInput }}`) |
-| Original Prompt | For output mode - helps detect context manipulation |
-| Passthrough Fields | Fields to preserve in output (default: `sessionId,action`) |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| Stream Direction | `Input (Before LLM)` or `Output (After LLM)` | Input |
+| Text | The text to analyze | `{{ $json.chatInput }}` |
+| Original Prompt | For output mode - helps detect context manipulation | - |
+| Passthrough Fields | Comma-separated fields to preserve | `sessionId,action` |
+
+### Advanced Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| Timeout | 30000ms | Request timeout in milliseconds |
+| Fail Open | true | On API error, continue with original text |
+| Include Full Response | false | Include all detection branch details |
+| Custom Metadata | `{}` | Additional metadata for logging/audit |
 
 ## Output Data
 
-The node outputs a single item with the following fields:
+The node outputs a single item with detection results:
 
 ```json
 {
-  "sessionId": "...",
-  "action": "...",
+  "sessionId": "abc-123",
+  "action": "chat",
   "guardedText": "The processed text based on decision",
   "vgDecision": "ALLOWED",
   "vgScore": 15,
   "vgThreatLevel": "LOW",
   "vgCategories": [],
-  "vgRequestId": "uuid",
+  "vgRequestId": "550e8400-e29b-41d4-a716-446655440000",
   "vgLatencyMs": 45
 }
 ```
 
-### guardedText Field
+### Understanding guardedText
 
-The `guardedText` field contains different content based on the decision:
+The `guardedText` field contains different content depending on the detection decision:
 
-| Decision | guardedText Contains |
-|----------|---------------------|
-| `ALLOWED` | Original text (unchanged) |
-| `SANITIZED` | Redacted/sanitized text with PII removed |
-| `BLOCKED` | Block message explaining why content was rejected |
+| Decision | guardedText Contains | Use Case |
+|----------|---------------------|----------|
+| `ALLOWED` | Original text (unchanged) | Safe to process |
+| `SANITIZED` | Redacted text with PII removed | Safe after cleanup |
+| `BLOCKED` | Block message explaining rejection | Do not process |
 
-### Decision-Specific Fields
+### Additional Fields by Decision
 
-**When SANITIZED:**
-- `vgOriginalText` - The original text before sanitization
-- `vgRedactedText` - Text with PII redacted (if applicable)
-- `vgSanitizedText` - Alternative sanitized version (if applicable)
+**ALLOWED:**
+- Standard fields only
 
-**When BLOCKED:**
-- `vgBlockMessage` - The block message
-- `vgOriginalText` - The original blocked text
+**SANITIZED:**
+- `vgOriginalText` - Original text before sanitization
+- `vgRedactedText` - Text with PII markers (e.g., `[EMAIL]`, `[PHONE]`)
+- `vgSanitizedText` - Alternative sanitized version
 
-## Options
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| Timeout | 30000ms | Request timeout |
-| Fail Open | true | On error, continue with original text |
-| Include Full Response | false | Include all detection branch details |
-| Custom Metadata | `{}` | Additional metadata for logging |
-
-## Error Handling
-
-By default, the node uses **fail-open** behavior:
-
-- On API errors, items pass through with original text
-- Items include `vgError` and `vgFailOpen: true` fields
-- Set **Fail Open** to `false` to throw errors instead
-
-```json
-{
-  "guardedText": "original text",
-  "vgError": "Connection timeout",
-  "vgFailOpen": true,
-  "vgDecision": "ALLOWED"
-}
-```
+**BLOCKED:**
+- `vgBlockMessage` - Human-readable block reason
+- `vgOriginalText` - Original blocked text (for logging)
 
 ## Example Workflows
 
-### Input Guard (Before LLM)
+### Complete Input + Output Guard
+
+Protect both user input and AI response:
 
 ```
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│ Chat Trigger │───►│  VGE AIDR    │───►│  AI Agent    │
-│              │    │ (Input Mode) │    │              │
-└──────────────┘    └──────────────┘    └──────────────┘
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│ Chat Trigger │───>│  VGE AIDR    │───>│  AI Agent    │───>│  VGE AIDR    │───>│   Response   │
+│              │    │ (Input Mode) │    │  (OpenAI)    │    │(Output Mode) │    │              │
+└──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
 ```
 
-Configure VGE AIDR:
+**Input Guard Configuration:**
 - Stream Direction: `Input (Before LLM)`
 - Text: `{{ $json.chatInput }}`
 
-### Output Guard (After LLM)
-
-```
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│  AI Agent    │───►│  VGE AIDR    │───►│   Response   │
-│              │    │(Output Mode) │    │              │
-└──────────────┘    └──────────────┘    └──────────────┘
-```
-
-Configure VGE AIDR:
+**Output Guard Configuration:**
 - Stream Direction: `Output (After LLM)`
 - Text: `{{ $json.output }}`
 - Original Prompt: `{{ $json.chatInput }}`
 
 ### Decision-Based Routing
 
-Use an IF node after VGE AIDR to route based on decision:
+Route workflow based on detection decision using an IF node:
 
 ```
                     ┌──────────────┐
                     │  VGE AIDR    │
                     └──────────────┘
                            │
-                           ▼
+                           v
                     ┌──────────────┐
                     │     IF       │
                     │ vgDecision   │
                     └──────────────┘
                       │    │    │
             ALLOWED   │    │    │  BLOCKED
-                      ▼    │    ▼
-               ┌──────┐    │  ┌──────┐
-               │Proceed│   │  │Error │
-               │      │    │  │Reply │
-               └──────┘    │  └──────┘
+                      v    │    v
+               ┌──────┐    │  ┌──────────┐
+               │Proceed│   │  │  Error   │
+               │to LLM │    │  │ Response │
+               └──────┘    │  └──────────┘
                            │
                      SANITIZED
-                           ▼
+                           v
                     ┌──────────────┐
                     │ Log Warning  │
                     │ Then Proceed │
                     └──────────────┘
 ```
 
-## Build & Development
+**IF Node Conditions:**
+- Branch 1 (ALLOWED): `{{ $json.vgDecision === "ALLOWED" }}`
+- Branch 2 (SANITIZED): `{{ $json.vgDecision === "SANITIZED" }}`
+- Branch 3 (BLOCKED): `{{ $json.vgDecision === "BLOCKED" }}`
+
+## Error Handling
+
+By default, the node uses **fail-open** behavior to prevent workflow disruption:
+
+- On API timeout or errors, items pass through with original text
+- Error details are included in the output for logging
+- Set **Fail Open** to `false` to throw errors instead
+
+**Fail-open output example:**
+
+```json
+{
+  "guardedText": "original user text",
+  "vgError": "Connection timeout",
+  "vgFailOpen": true,
+  "vgDecision": "ALLOWED"
+}
+```
+
+## Development
+
+### Build from Source
 
 ```bash
+# Clone the repository
+git clone https://github.com/vigilguard/n8n-nodes-vge.git
+cd n8n-nodes-vge
+
 # Install dependencies
 npm install
 
-# Build
+# Build TypeScript
 npm run build
 
-# Copy icons
+# Copy icons to dist
 npm run copy:icons
 
-# Lint
+# Run linter
 npm run lint
+```
+
+### Project Structure
+
+```
+n8n-nodes-vge/
+├── src/
+│   ├── nodes/
+│   │   └── VgeAidr/
+│   │       ├── VgeAidr.node.ts    # Main node implementation
+│   │       └── vge-aidr.svg       # Node icon
+│   └── credentials/
+│       └── VgeApi.credentials.ts  # API credentials
+├── package.json
+└── tsconfig.json
 ```
 
 ## Requirements
 
-- Node.js >= 18.10
-- n8n version 1.0.0 or later
-- Vigil Guard Enterprise API access
+| Requirement | Version |
+|-------------|---------|
+| Node.js | >= 18.10 |
+| n8n | >= 1.0.0 |
+| Vigil Guard Enterprise | API access required |
+
+## Support
+
+- [Report Issues](https://github.com/vigilguard/n8n-nodes-vge/issues)
+- [Vigil Guard Documentation](https://docs.vigilguard.ai)
+- [API Reference](https://docs.vigilguard.ai/api)
 
 ## License
 
@@ -234,4 +283,4 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 - [Vigil Guard Enterprise](https://vigilguard.ai)
 - [API Documentation](https://docs.vigilguard.ai/api)
-- [n8n Community Nodes](https://docs.n8n.io/integrations/community-nodes/)
+- [n8n Community Nodes Documentation](https://docs.n8n.io/integrations/community-nodes/)
