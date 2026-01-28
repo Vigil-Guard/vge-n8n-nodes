@@ -1,0 +1,239 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "CUSTOM.vgeAidr",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -432
+      ],
+      "id": "1f6508ca-9446-42f0-aa70-4dacf65215c8",
+      "name": "VGE AIDR",
+      "credentials": {
+        "vgeApi": {
+          "id": "gUT2cLM3AQZWEVRA",
+          "name": "VGE account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.guardedText }}",
+        "options": {
+          "systemMessage": "=You are an assistant.\nYour output will be analyzed by automated semantic and intent-detection systems.\n\nYou MUST minimize formatting that could alter semantic interpretation.\n\nFollow these rules strictly:\n\nUse plain text only.\n\nDo NOT use markdown, headings, bullet points, numbered lists, tables, emojis, or code blocks unless explicitly required.\n\nPrefer short, natural paragraphs written as continuous prose.\n\nAvoid instructional or imperative structures unless the user explicitly asks for instructions.\n\nDo NOT enumerate steps using ordinal language such as “first”, “second”, “step”, etc.\n\nAvoid emphasis markers such as bold, italics, ALL CAPS, or symbols used for highlighting.\n\nKeep the tone neutral, descriptive, and informational.\n\nIf a complex explanation is required, split it into sentences, not structured lists.\n\n\ntools - use serp for any search related queris"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -112,
+        -432
+      ],
+      "id": "1f593b3a-c5d1-4358-8afa-f7198b8ccd90",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "responseNodes"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -624,
+        -432
+      ],
+      "id": "42675b3e-d506-45de-8084-4b6f519b909e",
+      "name": "When chat message received",
+      "webhookId": "eaff650b-1dd4-419e-844e-a0cda0f24671"
+    },
+    {
+      "parameters": {
+        "model": "moonshotai/kimi-k2-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -208
+      ],
+      "id": "452a4940-5a85-4dff-96ea-d5ce931d4ff4",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "BqlF8ewlgfN68pgL",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        -208
+      ],
+      "id": "293a3fe9-db04-4797-b84c-b6cc11b3f1e2",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "streamDirection": "output",
+        "text": "={{ $json.output }}",
+        "originalPrompt": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "CUSTOM.vgeAidr",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -432
+      ],
+      "id": "3a15ad5c-ce8d-4973-83d7-90ffa2e8c4ff",
+      "name": "VGE AIDR1",
+      "credentials": {
+        "vgeApi": {
+          "id": "gUT2cLM3AQZWEVRA",
+          "name": "VGE account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -208
+      ],
+      "id": "9fa03530-6aec-4081-8295-fdd0750f8545",
+      "name": "SerpAPI",
+      "credentials": {
+        "serpApi": {
+          "id": "56GTN99FNIyjNFcx",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "={{ $json.guardedText }}",
+        "waitUserReply": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -432
+      ],
+      "id": "af8d171d-f3b0-474b-830b-96f868e59613",
+      "name": "Respond to Chat"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "VGE AIDR": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "VGE AIDR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "VGE AIDR1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VGE AIDR1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Warsaw",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "3f7e2cfe-0d3c-4627-b12f-488e4029dafc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "99d92903845ff35c8bac431a1857c6ef529fc60127a5e3006f598fb5dd1a6453"
+  },
+  "id": "tU9P_IQiSWdqTHIOu2_wl",
+  "tags": []
+}

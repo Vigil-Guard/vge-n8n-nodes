@@ -1,0 +1,61 @@
+{
+  "name": "n8n-nodes-vge",
+  "version": "1.0.0",
+  "description": "n8n community node for Vigil Guard Enterprise - AI Detection & Response for LLM security",
+  "license": "MIT",
+  "homepage": "https://github.com/vigil-guard/n8n-nodes-vge",
+  "author": {
+    "name": "Vigil Guard",
+    "email": "support@vigilguard.ai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vigil-guard/n8n-nodes-vge.git"
+  },
+  "engines": {
+    "node": ">=18.10"
+  },
+  "main": "dist/index.js",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "security",
+    "prompt-injection",
+    "llm-security",
+    "ai-safety",
+    "vigil-guard"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/VgeApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/VgeAidr/VgeAidr.node.js"
+    ]
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && npm run copy:icons",
+    "copy:icons": "cp nodes/VgeAidr/*.svg dist/nodes/VgeAidr/ 2>/dev/null || true && cp credentials/*.svg dist/credentials/ 2>/dev/null || true",
+    "dev": "tsc --watch",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write \"**/*.ts\"",
+    "prepublishOnly": "npm run build && npm run lint"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.4",
+    "prettier": "^3.2.0",
+    "typescript": "^5.4.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
