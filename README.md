@@ -6,31 +6,60 @@
 
 n8n community node for **Vigil Guard Enterprise** - AI Detection & Response (AIDR) for LLM security.
 
-Protect your AI workflows from prompt injection attacks, PII leakage, malicious content, and policy violations.
+Protect your AI workflows from prompt injection attacks, PII leakage, harmful content, and policy violations with multi-language support.
 
 ## Overview
 
-The **VGE AIDR** node acts as a security gateway for LLM workflows, providing real-time protection for both inputs and outputs. Deploy it as a guard before your AI agent to filter malicious prompts, and after your AI agent to prevent sensitive data leakage.
+The **VGE AIDR** node acts as a security gateway for LLM workflows, providing real-time protection for both inputs and outputs. Deploy it as a guard before your AI agent to filter malicious prompts, and after your AI agent to prevent sensitive data leakage and harmful content.
 
 ```
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
 │ Chat Trigger │───>│  VGE AIDR    │───>│  AI Agent    │───>│  VGE AIDR    │───>│   Response   │
 │              │    │ (Input Guard)│    │  (OpenAI)    │    │(Output Guard)│    │              │
 └──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
-                           │                                       │
-                           │         Detects & Protects:           │
-                           │    - Prompt injection attacks         │
-                           │    - PII (Personal Identifiable Info) │
-                           │    - Malicious content                │
-                           │    - Policy violations                │
-                           └───────────────────────────────────────┘
 ```
+
+## Detection Capabilities
+
+### Prompt Injection Detection
+Multi-layer detection using heuristics, semantic analysis, and LLM-based classification to identify and block prompt injection attacks, jailbreak attempts, and manipulation techniques.
+
+### Content Moderation
+Real-time content moderation with 18 detection categories across 8 languages (EN, PL, FR, ES, IT, PT, TR, RU):
+
+| Category | Description |
+|----------|-------------|
+| Hate Speech | Content promoting hatred against protected groups |
+| Violence | Content depicting or promoting physical violence |
+| Sexual Content | Explicit or sexually suggestive material |
+| Self-Harm | Content promoting self-harm or suicide |
+| Toxicity | Hostile, aggressive, or inflammatory content |
+| Severe Toxicity | Extremely harmful or dangerous content |
+| Insult | Personal attacks and demeaning language |
+| Vulgar | Profane or obscene language |
+| Crime | Content promoting illegal activities |
+
+### PII Detection & Redaction
+Automatic detection and redaction of Personal Identifiable Information:
+
+| PII Type | Examples |
+|----------|----------|
+| Email | jan.kowalski@firma.pl → `[EMAIL]` |
+| Phone | +48 123 456 789 → `[PHONE]` |
+| Credit Card | 4111-1111-1111-1111 → `[CREDIT_CARD]` |
+| National ID | PESEL, NIP, SSN → `[ID]` |
+| Names | Personal names → `[PERSON]` |
+| Addresses | Physical addresses → `[ADDRESS]` |
+
+### Policy Enforcement
+Configurable rules engine for custom security policies with per-category actions (ALLOW, BLOCK, LOG).
 
 ## Features
 
 - **Dual Protection** - Guard both inputs (before LLM) and outputs (after LLM)
-- **Single-Output Architecture** - Simplified workflow integration with decision metadata
+- **Multi-Language Support** - Content moderation in 8 languages
 - **Automatic Text Processing** - Returns `guardedText` based on detection decision
+- **PII Redaction** - Automatic sanitization of sensitive data
 - **Fail-Safe Design** - Configurable fail-open behavior prevents workflow disruption
 - **Passthrough Fields** - Preserve session context and custom fields across nodes
 - **Full Response Details** - Optional access to all detection branch results
@@ -118,7 +147,7 @@ The node outputs a single item with detection results:
   "vgDecision": "ALLOWED",
   "vgScore": 15,
   "vgThreatLevel": "LOW",
-  "vgCategories": [],
+  "vgCategories": ["PROMPT_INJECTION", "TOXICITY"],
   "vgRequestId": "550e8400-e29b-41d4-a716-446655440000",
   "vgLatencyMs": 45
 }
