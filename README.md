@@ -16,9 +16,16 @@ The **VGE AIDR** node acts as a security gateway for LLM workflows, providing re
 
 ```
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│ Chat Trigger │───>│  VGE AIDR    │───>│  AI Agent    │───>│  VGE AIDR    │───>│   Response   │
+│ Chat Trigger │───►│  VGE AIDR    │───►│  AI Agent    │───►│  VGE AIDR    │───►│   Response   │
 │              │    │ (Input Guard)│    │  (OpenAI)    │    │(Output Guard)│    │              │
 └──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
+                           │                                       │
+                           │       VGE Detection Pipeline:         │
+                           │  • Prompt injection attacks           │
+                           │  • Content moderation (18 categories) │
+                           │  • PII detection & redaction          │
+                           │  • Policy enforcement                 │
+                           └───────────────────────────────────────┘
 ```
 
 ## Detection Capabilities
