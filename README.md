@@ -335,5 +335,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## Links
 
 - [Vigil Guard Enterprise](https://vigilguard.ai)
-- [API Documentation](https://docs.vigilguard.ai/api)
+- [Python SDK](https://github.com/Vigil-Guard/vge-python-sdk)
 - [n8n Community Nodes Documentation](https://docs.n8n.io/integrations/community-nodes/)
