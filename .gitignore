@@ -7,3 +7,8 @@ dist/
 .env.local
 .idea/
 .vscode/
+*.pem
+*.key
+.npmrc
+coverage/
+.tsbuildinfo
