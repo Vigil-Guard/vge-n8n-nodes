@@ -184,6 +184,7 @@ export class VgeAidr implements INodeType {
               vgFailOpen: true,
               vgDecision: 'ALLOWED',
             },
+            pairedItem: { item: itemIndex },
           });
         } else {
           throw new NodeOperationError(
@@ -229,6 +230,7 @@ async function processItem(
         vgDecision: 'ALLOWED',
         vgSkipped: true,
       },
+      pairedItem: { item: itemIndex },
     };
   }
 
@@ -314,5 +316,5 @@ async function processItem(
     outputData.vgFullResponse = response;
   }
 
-  return { json: outputData };
+  return { json: outputData, pairedItem: { item: itemIndex } };
 }
