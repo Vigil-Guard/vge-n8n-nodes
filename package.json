@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-vge",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "n8n community node for Vigil Guard Enterprise - AI Detection & Response for LLM security",
   "license": "MIT",
   "homepage": "https://github.com/Vigil-Guard/n8n-nodes-vge",
