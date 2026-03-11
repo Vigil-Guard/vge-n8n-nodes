@@ -3,14 +3,14 @@
   "version": "1.0.3",
   "description": "n8n community node for Vigil Guard Enterprise - AI Detection & Response for LLM security",
   "license": "MIT",
-  "homepage": "https://github.com/Vigil-Guard/n8n-nodes-vge",
+  "homepage": "https://github.com/Vigil-Guard/vge-n8n-nodes",
   "author": {
     "name": "Vigil Guard",
     "email": "contact@vigilguard.ai"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Vigil-Guard/n8n-nodes-vge.git"
+    "url": "https://github.com/Vigil-Guard/vge-n8n-nodes.git"
   },
   "engines": {
     "node": ">=18.10"
